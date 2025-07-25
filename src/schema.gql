@@ -1,0 +1,19 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Todo {
+  id: Int!
+  description: String!
+  done: Boolean!
+}
+
+type Query {
+  helloWorld: String!
+  randomNumber: Float!
+
+  """From zro to argument TO"""
+  randomNumberFromZeroTo(to: Int): Int!
+  todos: [Todo!]!
+  TodoById(id: Int!): Todo!
+}
