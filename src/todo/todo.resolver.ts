@@ -7,6 +7,7 @@ export class TodoResolver {
   constructor(private readonly todoService: TodoService) {}
   @Query(() => [Todo], { name: 'todos' })
   findAll(): Todo[] {
+    //asjlk
     return this.todoService.findAll();
   }
 
