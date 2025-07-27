@@ -1,14 +1,18 @@
-import { Args, Int, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Todo } from './entity/todo.entity';
 import { TodoService } from './todo.service';
+import { CreateTodoInput } from './dto/inputs/create-todo.input';
+import { UpdateTodoInput } from './dto/inputs/update-todo.input';
+import { StatusArgs } from './dto/args/status.args';
+import { AggregationsType } from './types/aggregationts.type';
 
-@Resolver()
+@Resolver(()=>Todo)
 export class TodoResolver {
   constructor(private readonly todoService: TodoService) {}
   @Query(() => [Todo], { name: 'todos' })
-  findAll(): Todo[] {
-    //asjlk
-    return this.todoService.findAll();
+  findAll(@Args() statusArgs:StatusArgs): Todo[] {
+    
+    return this.todoService.findAll(statusArgs);
   }
 
   @Query(() => Todo, { name: 'TodoById' })
@@ -16,9 +20,41 @@ export class TodoResolver {
     return this.todoService.findOne(id);
   }
 
-  createTodo() {}
+  @Query(() => Int, { name: 'completedTodos' })
+  completedTodos(): number {
+    return this.todoService.completedTodos;
+  }
 
-  updateTodo() {}
+  @Query(()=>Int, {name:'pendingTodos'})
+  pendingTodos():number{
+    return this.todoService.pendingTodos;
+  }
 
-  removeTodo() {}
+  @Query(()=>Int, {name:'totalTodos'})
+  totalTodos():number{
+    return this.todoService.totalTodos;
+  }
+
+  @Query(()=> AggregationsType,{name:'aggregations'})
+  aggregations():AggregationsType{
+    return{
+      completed:this.todoService.completedTodos,
+      pending:this.todoService.pendingTodos,
+      total:this.todoService.totalTodos,
+      totalTodosCompleted:this.todoService.totalTodos
+    };
+  }
+
+  @Mutation(() => Todo, { name: 'createTodo' })
+  createTodo(@Args('createTodoInput') createTodoInput: CreateTodoInput) {
+    return this.todoService.create(createTodoInput);
+  }
+  @Mutation(() => Todo, { name: 'updateTodo' })
+  updateTodo(@Args('updateTodoInput') updateTodoInput: UpdateTodoInput) {
+    return this.todoService.update(updateTodoInput);
+  }
+  @Mutation(() => Todo, { name: 'removeTodo' })
+  removeTodo(@Args('id', { type: () => Int }) id: Number) {
+    return this.todoService.remove(id);
+  }
 }
